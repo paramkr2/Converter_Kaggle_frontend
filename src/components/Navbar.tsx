@@ -29,7 +29,7 @@ const CustomNavbar = () => {
     <Navbar bg="primary" variant="dark">
       <div className="container-fluid">
         <Navbar.Brand as={Link} to="/">
-          Food Delivery Frontend
+			Kaggle Video Converter
         </Navbar.Brand>
         <Nav className="ml-auto">
           <Container>
