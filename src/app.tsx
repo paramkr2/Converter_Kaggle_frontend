@@ -1,43 +1,34 @@
 import { useState } from 'react'
 import { ReactComponent as Logo } from './logo.svg'
+import Navbar from './components/Navbar'
+import {ToastContainer} from 'react-toastify'
+import {Routes,Route} from 'react-router-dom'
+import Home from './components/Home'
+import Login from './components/Login'
+import {AuthProvider} from './context/authcontext'
 import './app.css'
 
 export function App () {
-  const [count, setCount] = useState(0)
-
   return (
-    <div className='App'>
-      <header className='App-header'>
-        <Logo className='App-logo' title='logo' />
-        <p>Hello Vite + React!</p>
-        <p>
-          <button type='button' onClick={() => setCount((count) => count + 1)}>
-            count is: {count}
-          </button>
-        </p>
-        <p>
-          Edit <code>App.tsx</code> and save to test HMR updates.
-        </p>
-        <p>
-          <a
-            className='App-link'
-            href='https://reactjs.org'
-            target='_blank'
-            rel='noopener noreferrer'
-          >
-            Learn React
-          </a>
-          {' | '}
-          <a
-            className='App-link'
-            href='https://vitejs.dev/guide/features.html'
-            target='_blank'
-            rel='noopener noreferrer'
-          >
-            Vite Docs
-          </a>
-        </p>
-      </header>
-    </div>
+	<AuthProvider>
+		<div className="App">
+			<Navbar />
+			<ToastContainer />
+			<div className="container mt-4">
+				<Routes>
+				  <Route exact path="/" element={<Home />} />
+				  <Route exact path="/login" element={<Login />} />
+				</Routes>
+			</div>
+			<footer className="text-center text-lg-start bg-light text-muted mt-4">
+					<div className="text-center p-4">
+					© Copyright - 
+					<a target="_blank" className="text-reset fw-bold text-decoration-none" href="https://twitter.com" >
+						Paramanand Kumar
+					</a>
+				</div>
+			</footer>
+		</div>
+	</AuthProvider>
   )
 }
