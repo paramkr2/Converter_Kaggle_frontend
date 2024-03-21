@@ -8,18 +8,21 @@ const Home = () => {
 	const apiUrl = import.meta.env.VITE_API_URL;
 	const [loading, setLoading] = useState(true); // Added loading state
 	const [items, setItems] = useState([]);	
+	const [refreshList, setRefreshList] = useState(true);
 	const onTaskAdded = async (notebookId, name) => {
 	  // Create a new item object
 	  const newItem = {
 		status: 'pending',
 		name,
-		createdAt: new Date().toISOString(), // Use current date and time
+		createdAt: 'Now', // Use current date and time
 		outputFileUrl: '',
 		notebookId,
 	  };
-
+	  const newItems = [newItem].concat(items);
 	  // Update the state by adding the new item to the existing items array
-	  setItems(prevItems => [...prevItems, newItem]);
+	  //console.log('old items',items)
+	  setItems(newItems);
+	 
 	};
 	
 	const restList = async () => { 
@@ -39,8 +42,8 @@ const Home = () => {
 	}
 		
 	useEffect(() => {
-		restList();
-	  }, []);
+            restList();
+	  });
 	
 	
 
@@ -61,7 +64,7 @@ const Home = () => {
 
         {/* Column for the form */}
         <Col md={4}>
-			<CreateTask/>
+			<CreateTask onTaskAdded={onTaskAdded}/>
         </Col>
       </Row>
     </div>
