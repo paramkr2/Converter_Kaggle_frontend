@@ -1,15 +1,18 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Card, Button, Row, Col } from 'react-bootstrap';
+import { Card, Button, Row, Col, Spinner } from 'react-bootstrap';
 
 const ItemComponent = ({ item }) => {
-	const apiUrl = import.meta.env.VITE_API_URL;
+  const apiUrl = import.meta.env.VITE_API_URL;
   const [status, setStatus] = useState(item.status || 'N/A');
   const name = item.name || 'N/A';
   const createdAt = item.createdAt || 'N/A';
-  const [outputFileUrl, setOutputFileUrl] = useState(item.outputFileUrl );
-
+  const [outputFileUrl, setOutputFileUrl] = useState(item.outputFileUrl);
+  const [isChecking, setIsChecking] = useState(false);
+  
+  
   const handleCheck = async () => {
+    setIsChecking(true);
     try {
       const token = localStorage.getItem('jwtToken');
       const config = {
@@ -17,20 +20,20 @@ const ItemComponent = ({ item }) => {
         params: { notebookId: item.notebookId }
       };
       const response = await axios.get(`${apiUrl}/api/status`, config);
-
-      // Update the status of the item in the UI
-      setStatus(response.data.status); // Assuming the server returns the new status
+      setStatus(response.data.status);
       if (response.data?.outputFileUrl) {
         setOutputFileUrl(response.data.outputFileUrl);
       }
     } catch (error) {
       console.error('Error updating status:', error);
+    } finally {
+      setIsChecking(false);
     }
   };
 
   return (
-    <Card style={{ marginBottom: '1rem' }}>
-      <Card.Body>
+    <Card style={{ marginBottom: '0.1rem', padding: '0.1rem' }}>
+      <Card.Body style={{ padding: '0.5rem' }}>
         <Row>
           <Col xs={4}>
             <Card.Text style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
@@ -39,7 +42,10 @@ const ItemComponent = ({ item }) => {
           </Col>
           <Col xs={2}>
             <Card.Text style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-              {status}
+              {status !== 'complete' ? (
+				<Spinner animation="border" variant="danger" />
+			  ) : <span style={{ color: 'green' }}>✓</span>}
+			
             </Card.Text>
           </Col>
           <Col xs={2}>
@@ -48,17 +54,17 @@ const ItemComponent = ({ item }) => {
             </Card.Text>
           </Col>
           <Col xs={2}>
-            {status !== 'completed' && (
-              <Button variant='primary' onClick={handleCheck}>Check</Button>
-            )}
+            <div style={{ flex: 2 }}>
+				{status !== 'complete' ? (
+				  <>{isChecking ? <Spinner animation="border" variant="primary" /> : <a href="#" className="custom-link" onClick={handleCheck}>Check</a>}</>
+				) : <span style={{ color: 'green' }}>✓</span>}
+			  </div>
           </Col>
           <Col xs={2}>
-            {outputFileUrl !== '' && outputFileUrl !== 'Error' && (
-              <Button variant="primary" href={outputFileUrl} target="_blank">
-                Down
-              </Button>
-            )}
-          </Col>
+			  {outputFileUrl !== '' && outputFileUrl !== 'Error' && (
+				<a href={outputFileUrl} className="custom-link" target="_blank" download>Down</a>
+			  )}
+			</Col>
         </Row>
       </Card.Body>
     </Card>

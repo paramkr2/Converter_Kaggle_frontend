@@ -1,73 +1,90 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { Row, Col, Form, Button } from 'react-bootstrap';
+import { Row, Col, Form, Button, ListGroup,Pagination  } from 'react-bootstrap';
 import ListItem from './ListItem';
-import CreateTask from './CreateTask'
+import CreateTask from './CreateTask';
+
 const Home = () => {
-	const apiUrl = import.meta.env.VITE_API_URL;
-	const [loading, setLoading] = useState(true); // Added loading state
-	const [items, setItems] = useState([]);	
-	const [refreshList, setRefreshList] = useState(true);
-	const onTaskAdded = async (notebookId, name) => {
-	  // Create a new item object
-	  const newItem = {
-		status: 'pending',
-		name,
-		createdAt: 'Now', // Use current date and time
-		outputFileUrl: '',
-		notebookId,
+  const apiUrl = import.meta.env.VITE_API_URL;
+  const [loading, setLoading] = useState(true); // Added loading state
+  const [items, setItems] = useState([]);  
+  const [refreshList, setRefreshList] = useState(true);
+  const [totalPages, setTotalPages] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
+  
+  const onTaskAdded = async (notebookId, name) => {
+    const newItem = {
+      status: 'pending',
+      name,
+      createdAt: 'Now',
+      outputFileUrl: '',
+      notebookId,
+    };
+    const newItems = [newItem].concat(items);
+    setRefreshList(true);
+  };
+
+  const restList = async (currentPage) => { 
+    try {
+      const token = localStorage.getItem('jwtToken');
+      const config = {
+        headers: { Authorization: `${token}` },
+        params: { page: currentPage , limit:itemsPerPage } // Send page number to the API
+      };
+      const response = await axios.get(`${apiUrl}/api/list`, config);
+      setItems(response.data.tasks);
+      setTotalPages(response.data.totalPages); // Set the total number of pages
+      setLoading(false);
+    } catch (error) {
+      console.log('RestList Error ', error);
+    }
+  };
+	  const handlePageChange = (pageNumber) => {
+		setCurrentPage(pageNumber);
+		setLoading(true);
+		setRefreshList(true);
+		setLoading(true);
 	  };
-	  const newItems = [newItem].concat(items);
-	  // Update the state by adding the new item to the existing items array
-	  //console.log('old items',items)
-	  //setItems(newItems);
-	  setRefreshList(true);
-	  console.log('new items', items )
-	};
-	
-	const restList = async () => { 
-		try{
-			const token = localStorage.getItem('jwtToken');
-			const config = {
-				headers: { Authorization: `${token}` }
-			};
-		    const response = await axios.get(`${apiUrl}/api/list`,config)
-			const items = response.data;
-			console.log(items);
-			setItems(items.tasks);
-			setLoading(false)
-		  }catch(error){
-			console.log('ResList Error ',error)
-		  }
-	}
-		
-	useEffect(() => {
-		if(refreshList){
-			restList();
-			setRefreshList(false)
+	 
+	 useEffect(() => {
+		if (refreshList) {
+		  restList(currentPage);
+		  setRefreshList(false);
 		}
 	  }, [refreshList]);
-	
-	
 
-	return (
-		<div>
-		  <Row>
-			<Col md={4}>
-				<CreateTask onTaskAdded={onTaskAdded}/>
-			</Col>
-			<Col md={8}>
-			  <h2>Your Tasks</h2>
-			  {loading ? (
-				<p>Loading...</p>
-			  ) : (
-				items.map(item => (
-				  <ListItem item ={item} />
-				))
-			  )}
-			</Col>
-
+  return (
+    <div>
+      <Row>
+        <Col md={4}>
+          <CreateTask onTaskAdded={onTaskAdded} />
+        </Col>
+        <Col md={8}>
+          <ListGroup>
+            {loading ? (
+              <p>Loading...</p>
+            ) : (
+              items.map((item) => (
+                <ListGroup.Item key={item.notebookId}>
+                  <ListItem item={item} />
+                </ListGroup.Item>
+              ))
+            )}
+          </ListGroup>
+          <Pagination>
+            {Array.from({ length: totalPages }, (_, index) => (
+              <Pagination.Item
+                key={index + 1}
+                active={index + 1 === currentPage}
+                onClick={() => handlePageChange(index + 1)}
+              >
+                {index + 1}
+              </Pagination.Item>
+            ))}
+          </Pagination>
+        </Col>
       </Row>
     </div>
   );

@@ -1,37 +1,45 @@
-import React ,{useState} from 'react';
-import { Form, Button, Alert , Spinner } from 'react-bootstrap'; // Import Alert for displaying error messages
+import React, { useState } from 'react';
+import { Form, FloatingLabel, Button, Spinner } from 'react-bootstrap';
 import axios from 'axios';
-import { toast } from 'react-toastify'
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
 const CreateTask = ({ onTaskAdded }) => {
   const apiUrl = import.meta.env.VITE_API_URL;
-	const [isFormSubmitting,setIsFormSubmitting] = useState(false)
+  const [isFormSubmitting, setIsFormSubmitting] = useState(false);
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
     const videoUrl = formData.get('videoUrl');
     const crfValue = formData.get('crfValue');
     const name = formData.get('name');
-	
-	
-    let error = '';
-    if (!validateUrl(videoUrl)) { error += 'Invalid video URL format.\n'; }
-    if (!validateCrfValue(crfValue)) {  error += 'CRF value must be between 18 and 45.\n'; }
-    if (!validateName(name)) { error += 'Name cannot contain spaces.\n'; }
-    if (error) {
-      toast.error(error.trim());
-      return;
-    }
 
+    let error = '';
+    if (!validateUrl(videoUrl)) { error += 'Invalid URL.\n'; }
+    if (!validateCrfValue(crfValue)) { error += 'CRF 18-45.\n'; }
+    if (!validateName(name)) { error += 'Name cannot contain spaces.\n'; }
+   if (error) {
+	  toast.error(
+		<div>
+		  {error.trim().split('\n').map((line, index) => (
+			<div key={index} style={{ textAlign: 'left' }}>
+			  {line}
+			</div>
+		  ))}
+		</div>,
+		{ autoClose: false }
+	  );
+	  return;
+	}
     try {
-	setIsFormSubmitting(true)
+      setIsFormSubmitting(true);
       const token = localStorage.getItem('jwtToken');
       const config = {
         headers: { Authorization: `${token}` },
       };
       const response = await axios.post(`${apiUrl}/api/create`, { videoUrl, crfValue, name }, config);
 
-      console.log(response.data);
       if (response.status === 201) {
         await onTaskAdded(response.data.notebookId, name);
       } else {
@@ -39,10 +47,10 @@ const CreateTask = ({ onTaskAdded }) => {
       }
     } catch (error) {
       console.error('Error creating task:', error);
-    } finally{
-		toast.success('Task created successfully!');
-		setIsFormSubmitting(false);
-	}
+    } finally {
+      toast.success('Task created successfully!');
+      setIsFormSubmitting(false);
+    }
   };
 
   const validateUrl = (url) => {
@@ -59,31 +67,27 @@ const CreateTask = ({ onTaskAdded }) => {
   };
 
   return (
-    <>
-      <h2>Create New </h2>
+    <div style={{ backgroundColor: '#f4f4f4', padding: '20px' }}>
+      <h2>Create New Task</h2>
       <Form onSubmit={handleSubmit}>
-        <Form.Group controlId="videoUrl">
-          <Form.Label>Video URL</Form.Label>
+
+        <FloatingLabel controlId="floatingInputVideoUrl" label="Video Url" className="mb-3">
           <Form.Control type="text" name="videoUrl" placeholder="Enter video URL" />
-        </Form.Group>
+        </FloatingLabel>
 
-        <Form.Group controlId="crfValue">
-          <Form.Label>CRF Value</Form.Label>
+        <FloatingLabel controlId="floatingInputCrfValue" label="CRF Value" className="mb-3">
           <Form.Control type="text" name="crfValue" placeholder="Enter CRF value" />
-        </Form.Group>
+        </FloatingLabel>
 
-        <Form.Group controlId="name">
-          <Form.Label>Name</Form.Label>
+        <FloatingLabel controlId="floatingInputName" label="Name" className="mb-3">
           <Form.Control type="text" name="name" placeholder="Enter name" />
-        </Form.Group>
+        </FloatingLabel>
 
-        <Button variant="primary" type="submit">
-          {isFormSubmitting ? <Spinner animation="border" size="sm" /> : 'Submit'} 
+        <Button variant="dark" type="submit" disabled={isFormSubmitting}>
+          {isFormSubmitting ? <Spinner animation="border" size="sm" /> : 'Submit'}
         </Button>
       </Form>
-	  
-    </>
-	
+    </div>
   );
 };
 

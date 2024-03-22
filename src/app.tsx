@@ -25,7 +25,7 @@ export function App () {
 					<div className="text-center p-4">
 					© Copyright - 
 					<a target="_blank" className="text-reset fw-bold text-decoration-none" href="https://twitter.com" >
-						Paramanand Kumar
+						...
 					</a>
 				</div>
 			</footer>
