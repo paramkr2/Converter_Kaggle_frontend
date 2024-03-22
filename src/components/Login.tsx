@@ -1,9 +1,12 @@
 import React, { useState,useContext } from 'react';
 import axios from 'axios';
 import { Button, Form, Alert , Spinner  } from 'react-bootstrap';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate , useLocation } from 'react-router-dom';
 import {AuthContext} from '../context/authcontext' 
 const Login = () => {
+	const location = useLocation();
+	const tokenError = location.state?.error;
+	
 	const apiUrl = import.meta.env.VITE_API_URL;
 	const { isLoggedIn, setLoggedIn  } = useContext(AuthContext);
 	const navigate = useNavigate();
@@ -48,6 +51,7 @@ const Login = () => {
 	  return (
 	  
 		<div>
+			{tokenError && <Alert variant="danger">{tokenError}</Alert>}
 			{error && <Alert variant="danger">{error}</Alert>} {/* Display error message */}
 			<Form onSubmit={handleSubmit}>
 			  <Form.Group controlId="formBasicEmail">

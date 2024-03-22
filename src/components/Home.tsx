@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState} from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
 import { Row, Col, Pagination, Table,Spinner} from 'react-bootstrap';
 import ListItem from './ListItem';
 import CreateTask from './CreateTask';
 import Skeleton from 'react-loading-skeleton';
+import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
+	const navigate = useNavigate();
   const apiUrl = import.meta.env.VITE_API_URL;
   const [loading, setLoading] = useState(true); // Added loading state
   const [items, setItems] = useState([]);  
@@ -39,6 +41,10 @@ const Home = () => {
       setTotalPages(response.data.totalPages); // Set the total number of pages
       setLoading(false);
     } catch (error) {
+		if( error.code == 'ERR_BAD_REQUEST' ){
+			localStorage.removeItem('jwtToken')
+			navigate('/login' ,  { state: { error: 'Token expired. Please login again.' } })
+		  }
       console.log('RestList Error ', error);
     }
   };
