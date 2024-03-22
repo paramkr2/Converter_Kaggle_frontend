@@ -5,7 +5,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import Container from 'react-bootstrap/Navbar';
 import { AuthContext } from '../context/authcontext';
 import { useNavigate } from 'react-router-dom';
-
+import logo from '../public/logo.svg'
 const CustomNavbar = () => {
   const { isLoggedIn, setLoggedIn  } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -26,9 +26,10 @@ const CustomNavbar = () => {
   };
 
   return (
-    <Navbar bg="primary" variant="dark">
+    <Navbar bg="secondary" variant="dark">
       <div className="container-fluid">
         <Navbar.Brand as={Link} to="/">
+			<img src={logo} alt="Kaggle Logo" width="auto" height="30" />
 			Kaggle Video Converter
         </Navbar.Brand>
         <Nav className="ml-auto">

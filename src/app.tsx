@@ -14,7 +14,8 @@ export function App () {
 	<AuthProvider>
 		<div className="App">
 			<Navbar />
-			<ToastContainer position="top-left" closeOnClick pauseOnHover/>
+			<ToastContainer position="bottom-right" autoClose={3000} />
+
 			<div className="container mt-4">
 				<Routes>
 				  <Route exact path="/" element={<Home />} />
