@@ -21,8 +21,9 @@ const Home = () => {
 	  const newItems = [newItem].concat(items);
 	  // Update the state by adding the new item to the existing items array
 	  //console.log('old items',items)
-	  setItems(newItems);
-	 
+	  //setItems(newItems);
+	  setRefreshList(true);
+	  console.log('new items', items )
 	};
 	
 	const restList = async () => { 
@@ -42,17 +43,22 @@ const Home = () => {
 	}
 		
 	useEffect(() => {
-            restList();
-	  });
+		if(refreshList){
+			restList();
+			setRefreshList(false)
+		}
+	  }, [refreshList]);
 	
 	
 
 	return (
 		<div>
 		  <Row>
-			{/* Column for the list of items */}
+			<Col md={4}>
+				<CreateTask onTaskAdded={onTaskAdded}/>
+			</Col>
 			<Col md={8}>
-			  <h2>List of Items</h2>
+			  <h2>Your Tasks</h2>
 			  {loading ? (
 				<p>Loading...</p>
 			  ) : (
@@ -62,10 +68,6 @@ const Home = () => {
 			  )}
 			</Col>
 
-        {/* Column for the form */}
-        <Col md={4}>
-			<CreateTask onTaskAdded={onTaskAdded}/>
-        </Col>
       </Row>
     </div>
   );
