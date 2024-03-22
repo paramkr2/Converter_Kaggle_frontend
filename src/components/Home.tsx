@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-import { Row, Col, Form, Button, ListGroup,Pagination  } from 'react-bootstrap';
+import { Row, Col, Pagination, Table,Spinner} from 'react-bootstrap';
 import ListItem from './ListItem';
 import CreateTask from './CreateTask';
+import Skeleton from 'react-loading-skeleton';
 
 const Home = () => {
   const apiUrl = import.meta.env.VITE_API_URL;
@@ -23,7 +24,7 @@ const Home = () => {
       notebookId,
     };
     const newItems = [newItem].concat(items);
-    setRefreshList(true);
+	setItems( newItems );
   };
 
   const restList = async (currentPage) => { 
@@ -41,20 +42,36 @@ const Home = () => {
       console.log('RestList Error ', error);
     }
   };
-	  const handlePageChange = (pageNumber) => {
+	
+	const handlePageChange = (pageNumber) => {
 		setCurrentPage(pageNumber);
 		setLoading(true);
 		setRefreshList(true);
-		setLoading(true);
 	  };
 	 
+	const renderSkeletonRows = () => {
+      return Array.from({ length: 6 } , (_, rowIndex) => (
+                  <tr key={rowIndex}>  
+                    { Array.from({length:5}).map( (_,colIndex) => (
+						<td key={colIndex}> <Skeleton width={100} /> </td> 
+					)) }
+                  </tr>
+                ))
+	};
+
+	 
 	 useEffect(() => {
+		const delay = setTimeout(() => {
+		  setLoading(false);
+		}, 2000);
 		if (refreshList) {
 		  restList(currentPage);
 		  setRefreshList(false);
 		}
+		return () => clearTimeout(delay);
 	  }, [refreshList]);
-
+	
+	
   return (
     <div>
       <Row>
@@ -62,17 +79,27 @@ const Home = () => {
           <CreateTask onTaskAdded={onTaskAdded} />
         </Col>
         <Col md={8}>
-          <ListGroup>
-            {loading ? (
-              <p>Loading...</p>
-            ) : (
-              items.map((item) => (
-                <ListGroup.Item key={item.notebookId}>
-                  <ListItem item={item} />
-                </ListGroup.Item>
-              ))
-            )}
-          </ListGroup>
+          <Table striped bordered hover>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Status</th>
+                <th>Created</th>
+				<th>Refresh</th>
+				<th>Download</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                renderSkeletonRows()
+              ) : (
+				
+                items.map((item, index) => (
+                  <ListItem key={index} item={item} />
+                ))
+              )}
+            </tbody>
+          </Table>
           <Pagination>
             {Array.from({ length: totalPages }, (_, index) => (
               <Pagination.Item

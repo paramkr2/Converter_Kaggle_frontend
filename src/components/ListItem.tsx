@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { Card, Button, Row, Col, Spinner } from 'react-bootstrap';
+import moment from 'moment';
 
 const ItemComponent = ({ item }) => {
   const apiUrl = import.meta.env.VITE_API_URL;
   const [status, setStatus] = useState(item.status || 'N/A');
   const name = item.name || 'N/A';
-  const createdAt = item.createdAt || 'N/A';
   const [outputFileUrl, setOutputFileUrl] = useState(item.outputFileUrl);
   const [isChecking, setIsChecking] = useState(false);
-  
+  const createdAtFormatted = moment(item.createdAt).format('HH:mm DD/MM/YY') || item.createdAt;
+
   
   const handleCheck = async () => {
     setIsChecking(true);
@@ -32,42 +33,28 @@ const ItemComponent = ({ item }) => {
   };
 
   return (
-    <Card style={{ marginBottom: '0.1rem', padding: '0.1rem' }}>
-      <Card.Body style={{ padding: '0.5rem' }}>
-        <Row>
-          <Col xs={4}>
-            <Card.Text style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-              {name}
-            </Card.Text>
-          </Col>
-          <Col xs={2}>
-            <Card.Text style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+  
+	<tr>
+         <td className="text-truncate" style={{ maxWidth: '150px' }}>{name}</td>
+            <td className="text-truncate" style={{ maxWidth: '150px' }}>
               {status !== 'complete' ? (
-				<Spinner animation="border" variant="danger" />
+				<Spinner animation="border" variant="success" />
 			  ) : <span style={{ color: 'green' }}>✓</span>}
-			
-            </Card.Text>
-          </Col>
-          <Col xs={2}>
-            <Card.Text style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-              {createdAt}
-            </Card.Text>
-          </Col>
-          <Col xs={2}>
-            <div style={{ flex: 2 }}>
+            </td>
+          <td className="text-truncate" style={{ maxWidth: '150px' }} >
+              {createdAtFormatted}
+            </td>
+          <td>
 				{status !== 'complete' ? (
 				  <>{isChecking ? <Spinner animation="border" variant="primary" /> : <a href="#" className="custom-link" onClick={handleCheck}>Check</a>}</>
 				) : <span style={{ color: 'green' }}>✓</span>}
-			  </div>
-          </Col>
-          <Col xs={2}>
+			</td>
+			<td>
 			  {outputFileUrl !== '' && outputFileUrl !== 'Error' && (
 				<a href={outputFileUrl} className="custom-link" target="_blank" download>Down</a>
 			  )}
-			</Col>
-        </Row>
-      </Card.Body>
-    </Card>
+			</td>
+	</tr>
   );
 };
 

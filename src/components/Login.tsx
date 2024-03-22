@@ -52,12 +52,12 @@ const Login = () => {
 			<Form onSubmit={handleSubmit}>
 			  <Form.Group controlId="formBasicEmail">
 				<Form.Label>Username</Form.Label>
-				<Form.Control type="text" placeholder="Enter username" value={username} onChange={(e) => setUsername(e.target.value)} />
+				<Form.Control id type="text" placeholder="Enter username" value={username} onChange={(e) => setUsername(e.target.value)}  autoComplete="username" />
 			  </Form.Group>
 
 			  <Form.Group controlId="formBasicKey">
 				<Form.Label>Key</Form.Label>
-				<Form.Control type="text" placeholder="Enter API key" value={key} onChange={(e) => setKey(e.target.value)} />
+				<Form.Control type="password" placeholder="Enter API key" value={key} onChange={(e) => setKey(e.target.value)} autoComplete="current-password"/>
 			  </Form.Group>
 
 			  <Button variant="primary" type="submit">

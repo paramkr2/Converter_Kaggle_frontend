@@ -4,6 +4,18 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+import { Paper, Typography } from '@mui/material';
+
+const CreateTaskHeading = () => {
+  return (
+    <Paper elevation={10} sx={{ p: 2, mb: 4, backgroundColor: '#f4f4f4' }}>
+      <Typography variant="h6" fontWeight="bold" fontSize="1rem" color="secondary">
+        Create New Task
+      </Typography>
+    </Paper>
+  );
+};
+
 const CreateTask = ({ onTaskAdded }) => {
   const apiUrl = import.meta.env.VITE_API_URL;
   const [isFormSubmitting, setIsFormSubmitting] = useState(false);
@@ -72,7 +84,8 @@ const CreateTask = ({ onTaskAdded }) => {
 
   return (
     <div style={{ backgroundColor: '#f4f4f4', padding: '20px' }}>
-      <h2>Create New Task</h2>
+      {CreateTaskHeading()}
+
       <Form onSubmit={handleSubmit}>
 
         <FloatingLabel controlId="floatingInputVideoUrl" label="Video Url" className="mb-3">
