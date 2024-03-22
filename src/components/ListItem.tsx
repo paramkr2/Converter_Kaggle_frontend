@@ -55,7 +55,7 @@ const ItemComponent = ({ item }) => {
           <Col xs={2}>
             {outputFileUrl !== '' && outputFileUrl !== 'Error' && (
               <Button variant="primary" href={outputFileUrl} target="_blank">
-                ->
+                Down
               </Button>
             )}
           </Col>
