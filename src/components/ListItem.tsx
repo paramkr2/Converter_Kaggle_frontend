@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { Card, Button, Row, Col, Spinner } from 'react-bootstrap';
+import { Spinner } from 'react-bootstrap';
+import { motion } from 'framer-motion';
 import moment from 'moment';
 
 const ItemComponent = ({ item }) => {
@@ -11,7 +12,6 @@ const ItemComponent = ({ item }) => {
   const [isChecking, setIsChecking] = useState(false);
   const createdAtFormatted = moment(item.createdAt).format('HH:mm DD/MM/YY') || item.createdAt;
 
-  
   const handleCheck = async () => {
     setIsChecking(true);
     try {
@@ -33,28 +33,31 @@ const ItemComponent = ({ item }) => {
   };
 
   return (
-  
-	<tr>
-         <td className="text-truncate" style={{ maxWidth: '150px' }}>{name}</td>
-            <td className="text-truncate" style={{ maxWidth: '150px' }}>
-              {status !== 'complete' ? (
-				<Spinner animation="border" variant="success" />
-			  ) : <span style={{ color: 'green' }}>✓</span>}
-            </td>
-          <td className="text-truncate" style={{ maxWidth: '150px' }} >
-              {createdAtFormatted}
-            </td>
-          <td>
-				{status !== 'complete' ? (
-				  <>{isChecking ? <Spinner animation="border" variant="primary" /> : <a href="#" className="custom-link" onClick={handleCheck}>Check</a>}</>
-				) : <span style={{ color: 'green' }}>✓</span>}
-			</td>
-			<td>
-			  {outputFileUrl !== '' && outputFileUrl !== 'Error' && (
-				<a href={outputFileUrl} className="custom-link" target="_blank" download>Down</a>
-			  )}
-			</td>
-	</tr>
+    <motion.tr
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <td className="text-truncate" style={{ maxWidth: '150px' }}>{name}</td>
+      <td className="text-truncate" style={{ maxWidth: '150px' }}>
+        {status !== 'complete' ? (
+          <Spinner animation="border" variant="success" />
+        ) : <span style={{ color: 'green' }}>✓</span>}
+      </td>
+      <td className="text-truncate" style={{ maxWidth: '150px' }} >
+        {createdAtFormatted}
+      </td>
+      <td>
+        {status !== 'complete' ? (
+          <>{isChecking ? <Spinner animation="border" variant="primary" /> : <a href="#" className="custom-link" onClick={handleCheck}>Check</a>}</>
+        ) : <span style={{ color: 'green' }}>✓</span>}
+      </td>
+      <td>
+        {outputFileUrl !== '' && outputFileUrl !== 'Error' && (
+          <a href={outputFileUrl} className="custom-link" target="_blank" download>Down</a>
+        )}
+      </td>
+    </motion.tr>
   );
 };
 
