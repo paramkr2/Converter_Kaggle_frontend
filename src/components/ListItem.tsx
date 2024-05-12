@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import moment from 'moment';
 
 const ItemComponent = ({ item }) => {
+
   const apiUrl = import.meta.env.VITE_API_URL;
   const [status, setStatus] = useState(item.status || 'N/A');
   const name = item.name || 'N/A';
@@ -32,8 +33,9 @@ const ItemComponent = ({ item }) => {
     }
   };
 
+
   return (
-    <motion.tr
+    <motion.tr 
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}

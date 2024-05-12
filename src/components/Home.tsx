@@ -18,6 +18,18 @@ const Home = () => {
   const itemsPerPage = 6;
   
   const onTaskAdded = async (notebookId, name) => {
+
+    /* 
+      Since we are appending item at the begining of the item, 
+      using index as key, items.map((item, index) => ( <ListItem key={index}))
+      runs into problem, because react tries to reRender using existing indexes. 
+
+      key={JSON.stringify(item)} solves the issue for now 
+      key={item.notebookId} , anything other than index which is unique 
+
+    */
+
+
     const newItem = {
       status: 'pending',
       name,
@@ -25,9 +37,12 @@ const Home = () => {
       outputFileUrl: '',
       notebookId,
     };
-    const newItems = [newItem].concat(items);
-	setItems( newItems );
+
+	  setItems( items => [newItem].concat(items) );
+
   };
+
+ 
 
   const restList = async (currentPage) => { 
     try {
@@ -78,6 +93,7 @@ const Home = () => {
 	  }, [refreshList]);
 	
 	
+
   return (
     <div>
       <Row>
@@ -91,21 +107,23 @@ const Home = () => {
                 <th>Name</th>
                 <th>Status</th>
                 <th>Created</th>
-				<th>Refresh</th>
-				<th>Download</th>
+        				<th>Refresh</th>
+        				<th>Download</th>
               </tr>
             </thead>
             <tbody>
               {loading ? (
                 renderSkeletonRows()
               ) : (
-				
+				    
                 items.map((item, index) => (
-                  <ListItem key={index} item={item} />
+                  <ListItem key={item.notebookId} item={item} />
                 ))
               )}
             </tbody>
           </Table>
+          
+
           <Pagination>
             {Array.from({ length: totalPages }, (_, index) => (
               <Pagination.Item
@@ -117,6 +135,7 @@ const Home = () => {
               </Pagination.Item>
             ))}
           </Pagination>
+        
         </Col>
       </Row>
     </div>
